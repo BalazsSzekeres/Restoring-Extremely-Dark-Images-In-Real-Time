@@ -1,3 +1,4 @@
 train_test_ours/SID_cvpr_18_dataset/
 venv/
 .idea/
+*.pth

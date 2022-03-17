@@ -59,7 +59,7 @@ train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
 train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
 # If you have less CPU RAM you would like to use fewer images for training.
 if dry_run:
-    train_files = train_files[:100]
+    train_files = train_files[:5]
     opt['iterations'] = dry_run_iterations
     
 gt_files = []
@@ -80,6 +80,14 @@ gt_files = []
 for x in test_files:
     gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
 dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
+
+torch.save(dataloader_test,'dataloader_test.pth')
+torch.save(dataloader_train, 'dataloader_train.pth')
+
+dataloader_test = torch.load('dataloader_test.pth')
+dataloader_train = torch.load('dataloader_train.pth')
+
+
 
 for i,img in enumerate(dataloader_train):    
     print('Input image size : {}, GT image size : {}'.format(img[0].size(), img[1].size()))    
