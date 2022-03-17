@@ -14,7 +14,7 @@ opt['atWhichReduce'] = [500000] # Reduce learning rate at these iterations.
 opt['batch_size'] = 8
 opt['atWhichSave'] = [2,100002,150002,200002,250002,300002,350002,400002,450002,500002,550000, 600000,650002,700002,750000,800000,850002,900002,950000,1000000] # testing will be done at these iterations and corresponding model weights will be saved.
 opt['iterations'] = 1000005 # The model will run for these many iterations.
-dry_run = False # If you wish to first test the entire workflow, for couple of iterations, make this TRUE
+dry_run = True # If you wish to first test the entire workflow, for couple of iterations, make this TRUE
 dry_run_iterations = 100 # If dry run flag is set TRUE the code will terminate after these many iterations
 
 metric_average_file = 'metric_average.txt' # Average metrics will be saved here. Please note these are only for supervison. We used MATLAB for final PSNR and SSIM evaluation.
@@ -37,9 +37,11 @@ import glob
 from common_classes import load_data, run_test
 from network import Net
 from vainF_ssim import MS_SSIM
+import time
 
+start_time = time.time()
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-os.environ["CUDA_VISIBLE_DEVICES"]="1" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
+os.environ["CUDA_VISIBLE_DEVICES"]="0" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
 
 shutil.rmtree(metric_average_file, ignore_errors = True)
 shutil.rmtree(test_amplification_file, ignore_errors = True)
@@ -53,28 +55,30 @@ os.makedirs(save_weights)
 os.makedirs(save_images)
 os.makedirs(save_csv_files)
 
-train_files = glob.glob('/SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
-train_files +=glob.glob('/SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
+train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
+train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
 # If you have less CPU RAM you would like to use fewer images for training.
 if dry_run:
-    train_files = train_files[:2]
+    train_files = train_files[:100]
     opt['iterations'] = dry_run_iterations
     
 gt_files = []
 for x in train_files:
-    gt_files += glob.glob('/SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+    gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
     
 dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification_file,20,gt_amp=True,training=True), batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
 # gt_amp=True means use GT information for amplification. Make it false for automatic estimation.
 # 20 here means that afte every 20 images have been loaded to CPU RAM print statistics.
+print("--- %s seconds ---" % (time.time() - start_time))
 
-test_files = glob.glob('/SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW') 
+
+test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
 if dry_run:
     test_files = test_files[:2]
     
 gt_files = []
 for x in test_files:
-    gt_files = gt_files+ glob.glob('/SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+    gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
 dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
 
 for i,img in enumerate(dataloader_train):    
@@ -83,7 +87,7 @@ for i,img in enumerate(dataloader_train):
     
 ############ Training Begins
 
-device = torch.device("cuda")
+device = torch.device('cuda')
 model = Net()
 print(model)
 print('\nTrainable parameters : {}\n'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
@@ -144,6 +148,7 @@ while iter_num<opt['iterations']:
                     group['lr']=1e-5
                 print('Changing LR from {} to {}'.format(old_lr,group['lr']))
 
-np.savetxt(os.path.join(save_csv_files,'loss_curve.csv'),[p for p in zip(loss_iter_list,loss_list,iter_LR)],delimiter=',',fmt='%s')   
-                
+np.savetxt(os.path.join(save_csv_files,'loss_curve.csv'),[p for p in zip(loss_iter_list,loss_list,iter_LR)],delimiter=',',fmt='%s')
+
+print("--- %s seconds ---" % (time.time() - start_time))
         
