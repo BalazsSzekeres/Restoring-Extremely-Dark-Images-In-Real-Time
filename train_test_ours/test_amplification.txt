@@ -69,3 +69,99 @@ Edges:[0.00000000e+00 1.75019857e-04 3.57850833e-04 5.48841606e-04
 Image 1 base_amp: 33.56966018676758, gt_amp: 100, Our_Amp:222.93064880371094
 ...using gt_amp : \10006_00_10s.ARW
 Image 2 base_amp: 62.488914489746094, gt_amp: 100, Our_Amp:300.0
+...using gt_amp : \10011_00_10s.ARW
+Image 3 base_amp: 37.77427673339844, gt_amp: 100, Our_Amp:210.51344299316406
+...using gt_amp : \10016_00_10s.ARW
+Image 4 base_amp: 43.17006301879883, gt_amp: 100, Our_Amp:259.2093200683594
+...using gt_amp : \10022_00_10s.ARW
+Image 5 base_amp: 44.48308563232422, gt_amp: 100, Our_Amp:263.960205078125
+...using gt_amp : \10030_00_10s.ARW
+Image 6 base_amp: 8.683830261230469, gt_amp: 100, Our_Amp:60.54322052001953
+...using gt_amp : \10032_00_10s.ARW
+Image 7 base_amp: 23.26981544494629, gt_amp: 100, Our_Amp:138.19671630859375
+...using gt_amp : \10034_00_10s.ARW
+Image 8 base_amp: 29.028900146484375, gt_amp: 100, Our_Amp:229.5956268310547
+...using gt_amp : \10035_00_10s.ARW
+Image 9 base_amp: 103.3189468383789, gt_amp: 100, Our_Amp:300.0
+...using gt_amp : \10040_00_10s.ARW
+Image 10 base_amp: 16.711271286010742, gt_amp: 100, Our_Amp:114.6363754272461
+...using gt_amp : \10045_00_10s.ARW
+Image 11 base_amp: 5.763816833496094, gt_amp: 100, Our_Amp:60.25506591796875
+...using gt_amp : \10054_00_10s.ARW
+Image 12 base_amp: 6.995429039001465, gt_amp: 100, Our_Amp:68.94931030273438
+...using gt_amp : \10055_00_10s.ARW
+Image 13 base_amp: 7.589847564697266, gt_amp: 100, Our_Amp:66.1595687866211
+...using gt_amp : \10068_00_10s.ARW
+Image 14 base_amp: 6.406929016113281, gt_amp: 100, Our_Amp:43.795814514160156
+...using gt_amp : \10069_00_10s.ARW
+Image 15 base_amp: 17.28890609741211, gt_amp: 100, Our_Amp:138.7966766357422
+...using gt_amp : \10074_00_30s.ARW
+Image 16 base_amp: 20.92810821533203, gt_amp: 300, Our_Amp:126.06838989257812
+...using gt_amp : \10077_00_30s.ARW
+Image 17 base_amp: 17.0257511138916, gt_amp: 300, Our_Amp:130.5530242919922
+...using gt_amp : \10082_00_30s.ARW
+Image 18 base_amp: 18.947999954223633, gt_amp: 300, Our_Amp:155.7185516357422
+...using gt_amp : \10087_00_30s.ARW
+Image 19 base_amp: 47.190574645996094, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10093_00_30s.ARW
+Image 20 base_amp: 22.277084350585938, gt_amp: 300, Our_Amp:178.7116241455078
+...using gt_amp : \10101_00_30s.ARW
+Image 21 base_amp: 47.654571533203125, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10103_00_30s.ARW
+Image 22 base_amp: 61.07137680053711, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10105_00_30s.ARW
+Image 23 base_amp: 35.78985595703125, gt_amp: 300, Our_Amp:270.283203125
+...using gt_amp : \10106_00_30s.ARW
+Image 24 base_amp: 36.5456428527832, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10111_00_30s.ARW
+Image 25 base_amp: 15.318669319152832, gt_amp: 300, Our_Amp:245.84402465820312
+...using gt_amp : \10116_00_30s.ARW
+Image 26 base_amp: 12.538944244384766, gt_amp: 300, Our_Amp:192.9468231201172
+...using gt_amp : \10125_00_30s.ARW
+Image 27 base_amp: 25.685237884521484, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10126_00_30s.ARW
+Image 28 base_amp: 8.917244911193848, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10139_00_30s.ARW
+Image 29 base_amp: 32.12429428100586, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10140_00_30s.ARW
+Image 30 base_amp: 13.36182975769043, gt_amp: 300, Our_Amp:277.0789489746094
+...using gt_amp : \10162_00_30s.ARW
+Image 31 base_amp: 262.7183532714844, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10163_00_30s.ARW
+Image 32 base_amp: 136.20028686523438, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10167_00_30s.ARW
+Image 33 base_amp: 50.72079086303711, gt_amp: 300, Our_Amp:263.9234924316406
+...using gt_amp : \10170_00_30s.ARW
+Image 34 base_amp: 204.78965759277344, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10172_00_30s.ARW
+Image 35 base_amp: 95.03265380859375, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10176_00_30s.ARW
+Image 36 base_amp: 78.2137451171875, gt_amp: 300, Our_Amp:300.0
+...using gt_amp : \10178_00_10s.ARW
+Image 37 base_amp: 10.398301124572754, gt_amp: 100, Our_Amp:83.0672378540039
+...using gt_amp : \10185_00_10s.ARW
+Image 38 base_amp: 8.000943183898926, gt_amp: 100, Our_Amp:67.82311248779297
+...using gt_amp : \10187_00_10s.ARW
+Image 39 base_amp: 16.318910598754883, gt_amp: 100, Our_Amp:138.75637817382812
+...using gt_amp : \10191_00_10s.ARW
+Image 40 base_amp: 9.445470809936523, gt_amp: 100, Our_Amp:76.31560516357422
+...using gt_amp : \10192_00_10s.ARW
+Image 41 base_amp: 12.1875, gt_amp: 100, Our_Amp:87.52759552001953
+...using gt_amp : \10193_00_10s.ARW
+Image 42 base_amp: 17.87125015258789, gt_amp: 100, Our_Amp:123.38278198242188
+...using gt_amp : \10198_00_10s.ARW
+Image 43 base_amp: 7.504162311553955, gt_amp: 100, Our_Amp:73.77110290527344
+...using gt_amp : \10199_00_10s.ARW
+Image 44 base_amp: 13.236003875732422, gt_amp: 100, Our_Amp:98.14981842041016
+...using gt_amp : \10203_00_10s.ARW
+Image 45 base_amp: 21.744218826293945, gt_amp: 100, Our_Amp:162.757568359375
+...using gt_amp : \10213_00_10s.ARW
+Image 46 base_amp: 11.612876892089844, gt_amp: 100, Our_Amp:94.71036529541016
+...using gt_amp : \10217_00_10s.ARW
+Image 47 base_amp: 16.301986694335938, gt_amp: 100, Our_Amp:123.99034881591797
+...using gt_amp : \10226_00_10s.ARW
+Image 48 base_amp: 7.651492595672607, gt_amp: 100, Our_Amp:69.48236846923828
+...using gt_amp : \10227_00_10s.ARW
+Image 49 base_amp: 24.16302490234375, gt_amp: 100, Our_Amp:172.0651397705078
+...using gt_amp : \10228_00_10s.ARW
+Image 50 base_amp: 17.970211029052734, gt_amp: 100, Our_Amp:136.18727111816406

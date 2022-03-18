@@ -13,8 +13,10 @@ opt['reduce_lr_by'] = 0.1 # Reduce learning rate by 10 times
 opt['atWhichReduce'] = [500000] # Reduce learning rate at these iterations.
 opt['batch_size'] = 8
 opt['atWhichSave'] = [2,100002,150002,200002,250002,300002,350002,400002,450002,500002,550000, 600000,650002,700002,750000,800000,850002,900002,950000,1000000] # testing will be done at these iterations and corresponding model weights will be saved.
-opt['iterations'] = 1000005 # The model will run for these many iterations.
-dry_run = True # If you wish to first test the entire workflow, for couple of iterations, make this TRUE
+#opt['iterations'] = 1000005 # The model will run for these many iterations.
+opt['iterations'] = 10000 # The model will run for these many iterations.
+
+dry_run = False # If you wish to first test the entire workflow, for couple of iterations, make this TRUE
 dry_run_iterations = 100 # If dry run flag is set TRUE the code will terminate after these many iterations
 
 metric_average_file = 'metric_average.txt' # Average metrics will be saved here. Please note these are only for supervison. We used MATLAB for final PSNR and SSIM evaluation.
@@ -81,11 +83,11 @@ for x in test_files:
     gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
 dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
 
-torch.save(dataloader_test,'dataloader_test.pth')
-torch.save(dataloader_train, 'dataloader_train.pth')
+#torch.save(dataloader_test,'dataloader_test.pth')
+#torch.save(dataloader_train, 'dataloader_train.pth')
 
-dataloader_test = torch.load('dataloader_test.pth')
-dataloader_train = torch.load('dataloader_train.pth')
+#dataloader_test = torch.load('dataloader_test.pth')
+#dataloader_train = torch.load('dataloader_train.pth')
 
 
 

@@ -31,16 +31,28 @@ train_files += glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
 
 
 if dry_run:
-    train_files = train_files[:5]
+    train_files = train_files[:1000]
     opt['iterations'] = dry_run_iterations
 
 gt_files = []
 for x in train_files:
     gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*' + x[-17:-12] + '*.ARW')
 
+print("Finished requisites in %s seconds" % (time.time() - start_time))
+start_time = time.time()
+
 dataloader_train = DataLoader(
     load_data(train_files, gt_files, train_amplification_file, 20, gt_amp=True, training=True),
     batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
+
+print("Finished loading train files in %s seconds" % (time.time() - start_time))
+start_time = time.time()
+
+torch.save(dataloader_train, 'dataloader_train.pth')
+del dataloader_train
+
+print("Finished saving train files in %s seconds" % (time.time() - start_time))
+start_time = time.time()
 
 
 test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
@@ -50,15 +62,14 @@ if dry_run:
 gt_files = []
 for x in test_files:
     gt_files = gt_files + glob.glob('SID_cvpr_18_dataset/Sony/long/*' + x[-17:-12] + '*.ARW')
+
 dataloader_test = DataLoader(load_data(test_files, gt_files, test_amplification_file, 2, gt_amp=True, training=False),
                              batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
 
-print("Finished processing in %s seconds" % (time.time() - start_time))
-print("Starting data save")
+print("Finished loading test files in %s seconds" % (time.time() - start_time))
 start_time = time.time()
 
 torch.save(dataloader_test, 'dataloader_test.pth')
-torch.save(dataloader_train, 'dataloader_train.pth')
-
-print("Finished saving in %s seconds" % (time.time() - start_time))
+del dataloader_test
+print("Finished saving test files in %s seconds" % (time.time() - start_time))
 
