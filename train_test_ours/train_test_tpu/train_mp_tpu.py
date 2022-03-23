@@ -121,9 +121,10 @@ def train(rank, opt):
 if __name__ == '__main__':
 
     start_time = time.time()
-    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-    os.environ["CUDA_VISIBLE_DEVICES"]="0" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
-
+    # os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
+    # os.environ["CUDA_VISIBLE_DEVICES"]="0" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
+    os.environ['XRT_TPU_CONFIG'] = "tpu_worker;0;10.164.0.7:8470"
+    
     shutil.rmtree(metric_average_file, ignore_errors = True)
     shutil.rmtree(test_amplification_file, ignore_errors = True)
     shutil.rmtree(train_amplification_file, ignore_errors = True)
@@ -136,8 +137,10 @@ if __name__ == '__main__':
     os.makedirs(save_images)
     os.makedirs(save_csv_files)
 
-    train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
-    train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
+    # train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
+    # train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
+    train_files = glob.glob('Sony/short/0*_00_0.1s.ARW')
+    train_files +=glob.glob('Sony/short/2*_00_0.1s.ARW')
     # If you have less CPU RAM you would like to use fewer images for training.
     if dry_run:
         train_files = train_files[:2]
@@ -145,7 +148,8 @@ if __name__ == '__main__':
         
     gt_files = []
     for x in train_files:
-        gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+        # gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+        gt_files += glob.glob('Sony/long/*'+x[-17:-12]+'*.ARW')
         
     dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification_file,20,gt_amp=True,training=True), batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
     # gt_amp=True means use GT information for amplification. Make it false for automatic estimation.
@@ -153,13 +157,16 @@ if __name__ == '__main__':
     print("--- %s seconds ---" % (time.time() - start_time))
 
 
-    test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
+    # test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
+    test_files = glob.glob('Sony/short/1*_00_0.1s.ARW')
+
     if dry_run:
         test_files = test_files[:2]
         
     gt_files = []
     for x in test_files:
-        gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+        # gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+        gt_files = gt_files+ glob.glob('Sony/long/*'+x[-17:-12]+'*.ARW')
     dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
 
     for i,img in enumerate(dataloader_train):    
