@@ -47,52 +47,6 @@ from network import Net
 from vainF_ssim import MS_SSIM
 import time
 
-start_time = time.time()
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-os.environ["CUDA_VISIBLE_DEVICES"]="0" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
-
-shutil.rmtree(metric_average_file, ignore_errors = True)
-shutil.rmtree(test_amplification_file, ignore_errors = True)
-shutil.rmtree(train_amplification_file, ignore_errors = True)
-
-shutil.rmtree(save_weights, ignore_errors = True)
-shutil.rmtree(save_images, ignore_errors = True)
-shutil.rmtree(save_csv_files, ignore_errors = True)
-
-os.makedirs(save_weights)
-os.makedirs(save_images)
-os.makedirs(save_csv_files)
-
-train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
-train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
-# If you have less CPU RAM you would like to use fewer images for training.
-if dry_run:
-    train_files = train_files[:2]
-    opt['iterations'] = dry_run_iterations
-    
-gt_files = []
-for x in train_files:
-    gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
-    
-dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification_file,20,gt_amp=True,training=True), batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
-# gt_amp=True means use GT information for amplification. Make it false for automatic estimation.
-# 20 here means that afte every 20 images have been loaded to CPU RAM print statistics.
-print("--- %s seconds ---" % (time.time() - start_time))
-
-
-test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
-if dry_run:
-    test_files = test_files[:2]
-    
-gt_files = []
-for x in test_files:
-    gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
-dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
-
-for i,img in enumerate(dataloader_train):    
-    print('Input image size : {}, GT image size : {}'.format(img[0].size(), img[1].size()))    
-    break
-    
 ############ Training Begins
 def train(rank, opt):
     # device = torch.device('cuda')
@@ -163,11 +117,58 @@ def train(rank, opt):
                     if group['lr']<1e-5:
                         group['lr']=1e-5
                     print('Changing LR from {} to {}'.format(old_lr,group['lr']))
-
-    np.savetxt(os.path.join(save_csv_files,'loss_curve.csv'),[p for p in zip(loss_iter_list,loss_list,iter_LR)],delimiter=',',fmt='%s')
-    print("--- %s seconds ---" % (time.time() - start_time))
         
 if __name__ == '__main__':
+
+    start_time = time.time()
+    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
+    os.environ["CUDA_VISIBLE_DEVICES"]="0" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
+
+    shutil.rmtree(metric_average_file, ignore_errors = True)
+    shutil.rmtree(test_amplification_file, ignore_errors = True)
+    shutil.rmtree(train_amplification_file, ignore_errors = True)
+
+    shutil.rmtree(save_weights, ignore_errors = True)
+    shutil.rmtree(save_images, ignore_errors = True)
+    shutil.rmtree(save_csv_files, ignore_errors = True)
+
+    os.makedirs(save_weights)
+    os.makedirs(save_images)
+    os.makedirs(save_csv_files)
+
+    train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
+    train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
+    # If you have less CPU RAM you would like to use fewer images for training.
+    if dry_run:
+        train_files = train_files[:2]
+        opt['iterations'] = dry_run_iterations
+        
+    gt_files = []
+    for x in train_files:
+        gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+        
+    dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification_file,20,gt_amp=True,training=True), batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
+    # gt_amp=True means use GT information for amplification. Make it false for automatic estimation.
+    # 20 here means that afte every 20 images have been loaded to CPU RAM print statistics.
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+
+    test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
+    if dry_run:
+        test_files = test_files[:2]
+        
+    gt_files = []
+    for x in test_files:
+        gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
+    dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
+
+    for i,img in enumerate(dataloader_train):    
+        print('Input image size : {}, GT image size : {}'.format(img[0].size(), img[1].size()))    
+        break
+        
     xmp.spawn(
         train, nprocs=opt['world_size'], args=(opt,), start_method='fork'
     )
+    
+    np.savetxt(os.path.join(save_csv_files,'loss_curve.csv'),[p for p in zip(loss_iter_list,loss_list,iter_LR)],delimiter=',',fmt='%s')
+    print("--- %s seconds ---" % (time.time() - start_time))
