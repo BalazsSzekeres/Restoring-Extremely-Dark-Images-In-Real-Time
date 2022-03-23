@@ -12,6 +12,7 @@ opt={'base_lr':1e-4} # Initial learning rate
 opt['reduce_lr_by'] = 0.1 # Reduce learning rate by 10 times
 opt['atWhichReduce'] = [500000] # Reduce learning rate at these iterations.
 opt['batch_size'] = 8
+opt['world_size'] = 8
 opt['atWhichSave'] = [2,100002,150002,200002,250002,300002,350002,400002,450002,500002,550000, 600000,650002,700002,750000,800000,850002,900002,950000,1000000] # testing will be done at these iterations and corresponding model weights will be saved.
 opt['iterations'] = 1000005 # The model will run for these many iterations.
 dry_run = True # If you wish to first test the entire workflow, for couple of iterations, make this TRUE
@@ -61,9 +62,9 @@ shutil.rmtree(save_csv_files, ignore_errors = True)
 os.makedirs(save_weights)
 os.makedirs(save_images)
 os.makedirs(save_csv_files)
-
-train_files = glob.glob('E:/TU/DL/Restoring-Extremely-Dark-Images-In-Real-Time/Sony/short/0*_00_0.1s.ARW')
-train_files +=glob.glob('E:/TU/DL/Restoring-Extremely-Dark-Images-In-Real-Time/Sony/short/2*_00_0.1s.ARW')
+pathname = ''
+train_files = glob.glob(pathname+'Sony/short/0*_00_0.1s.ARW')
+train_files +=glob.glob(pathname+'Sony/short/2*_00_0.1s.ARW')
 # If you have less CPU RAM you would like to use fewer images for training.
 if dry_run:
     train_files = train_files[:2]
@@ -71,7 +72,7 @@ if dry_run:
     
 gt_files = []
 for x in train_files:
-    gt_files += glob.glob('E:/TU/DL/Restoring-Extremely-Dark-Images-In-Real-Time/Sony/long/*'+x[-17:-12]+'*.ARW')
+    gt_files += glob.glob(pathname+'Sony/long/*'+x[-17:-12]+'*.ARW')
     
 dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification_file,20,gt_amp=True,training=True), batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
 # gt_amp=True means use GT information for amplification. Make it false for automatic estimation.
@@ -79,13 +80,13 @@ dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification
 print("--- %s seconds ---" % (time.time() - start_time))
 
 
-test_files = glob.glob('E:/TU/DL/Restoring-Extremely-Dark-Images-In-Real-Time/Sony/short/1*_00_0.1s.ARW')
+test_files = glob.glob(pathname+'Sony/short/1*_00_0.1s.ARW')
 if dry_run:
     test_files = test_files[:2]
     
 gt_files = []
 for x in test_files:
-    gt_files = gt_files+ glob.glob('E:/TU/DL/Restoring-Extremely-Dark-Images-In-Real-Time/Sony/long/*'+x[-17:-12]+'*.ARW')
+    gt_files = gt_files+ glob.glob(pathname+'Sony/long/*'+x[-17:-12]+'*.ARW')
 dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_file,2,gt_amp=True,training=False), batch_size=1, shuffle=False, num_workers=0, pin_memory=True)
 
 for i,img in enumerate(dataloader_train):    
@@ -99,8 +100,8 @@ def train(rank, opt):
         backend='nccl', world_size=0, init_method='env://',
         rank=rank
     )
-    # device = torch.device('cuda')
-    device = torch.device('cpu')
+    device = torch.device('cuda')
+    # device = torch.device('cpu')
     model = Net()
     # torch.cuda.set_device(rank)
     # model.cuda(rank)
@@ -167,8 +168,8 @@ def train(rank, opt):
     np.savetxt(os.path.join(save_csv_files,'loss_curve.csv'),[p for p in zip(loss_iter_list,loss_list,iter_LR)],delimiter=',',fmt='%s')
 
     print("--- %s seconds ---" % (time.time() - start_time))
+
 if __name__ == '__main__':
     # if not dry_run:
     #     mp.spawn(train, nprocs=opt['world_size'], args=(opt,))       
-    if dry_run:
-        mp.spawn(train, nprocs=dry_run_iterations, args=(opt,)) 
+    mp.spawn(train, nprocs=opt['world_size'], args=(opt,)) 
