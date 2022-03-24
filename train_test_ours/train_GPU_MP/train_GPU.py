@@ -12,7 +12,7 @@ opt={'base_lr':1e-4} # Initial learning rate
 opt['reduce_lr_by'] = 0.1 # Reduce learning rate by 10 times
 opt['atWhichReduce'] = [500000] # Reduce learning rate at these iterations.
 opt['batch_size'] = 8
-opt['world_size'] = 8
+opt['world_size'] = 4
 opt['atWhichSave'] = [2,100002,150002,200002,250002,300002,350002,400002,450002,500002,550000, 600000,650002,700002,750000,800000,850002,900002,950000,1000000] # testing will be done at these iterations and corresponding model weights will be saved.
 opt['iterations'] = 1000005 # The model will run for these many iterations.
 dry_run = True # If you wish to first test the entire workflow, for couple of iterations, make this TRUE
@@ -97,23 +97,23 @@ for i,img in enumerate(dataloader_train):
 def train(rank, opt):
     print("Starting train method on rank: {}".format(rank))
     dist.init_process_group(
-        backend='nccl', world_size=0, init_method='env://',
+        backend='nccl', world_size=opt['world_size'], init_method='env://',
         rank=rank
     )
     device = torch.device('cuda')
     # device = torch.device('cpu')
     model = Net()
-    # torch.cuda.set_device(rank)
-    # model.cuda(rank)
+    torch.cuda.set_device(rank)
+    model.cuda(rank)
     print(model)
     print('\nTrainable parameters : {}\n'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
     # model = model.to(device)
-    model = nn.parallel.DistributedDataParallel(model)
+    model = nn.parallel.DistributedDataParallel(model, device_ids=[rank])
     print('Device on cuda: {}'.format(next(model.parameters()).is_cuda))
 
     iter_num = 0
     l1_loss = torch.nn.L1Loss()
-    #feature_loss = Vgg16().to(device)
+    # feature_loss = Vgg16().to(device)
     dssim = MS_SSIM(data_range=1.0, size_average=True, channel=3)
     optimizer = torch.optim.Adam(model.parameters(), lr=opt['base_lr'])
     optimizer.zero_grad()
