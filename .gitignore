@@ -1,4 +1,12 @@
 train_test_ours/SID_cvpr_18_dataset/
+train_test_ours/__pycache__/
 venv/
 .idea/
 *.pth
+*.jpg
+*.ARW
+*.pyc
+*.pyc
+
+__pycache__
+*.jpg

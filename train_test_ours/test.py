@@ -30,7 +30,7 @@ print('\n Network parameters : {}\n'.format(sum(p.numel() for p in model.paramet
 model = model.to(device)
 print('Device on GPU: {}'.format(next(model.parameters()).is_cuda))
 #checkpoint = torch.load('demo_imgs/weights', map_location=device)
-checkpoint = torch.load('/projects/DarkImagesWeights/train_test_SID_CPVR_18_50/weights', map_location=device)
+checkpoint = torch.load('weights/weights_2', map_location=device)
 model.load_state_dict(checkpoint['model'])
 
 run_test(model, dataloader_test, save_images)

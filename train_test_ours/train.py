@@ -35,6 +35,8 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import glob
+import torch.nn as nn
+
 
 from common_classes import load_data, run_test
 from network import Net
@@ -42,7 +44,7 @@ from vainF_ssim import MS_SSIM
 import time
 
 start_time = time.time()
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"]="0" # You would probably like to change it to 0 or some other integer depending on GPU avalability.
 
 shutil.rmtree(metric_average_file, ignore_errors = True)
@@ -57,17 +59,17 @@ os.makedirs(save_weights)
 os.makedirs(save_images)
 os.makedirs(save_csv_files)
 
-train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_0.1s.ARW')
-train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_0.1s.ARW')
+train_files = glob.glob('SID_cvpr_18_dataset/Sony/short/0*_00_*.ARW')
+train_files +=glob.glob('SID_cvpr_18_dataset/Sony/short/2*_00_*.ARW')
 # If you have less CPU RAM you would like to use fewer images for training.
 if dry_run:
     train_files = train_files[:5]
     opt['iterations'] = dry_run_iterations
-    
+
 gt_files = []
 for x in train_files:
     gt_files += glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
-    
+
 dataloader_train = DataLoader(load_data(train_files,gt_files,train_amplification_file,20,gt_amp=True,training=True), batch_size=opt['batch_size'], shuffle=True, num_workers=0, pin_memory=True)
 # gt_amp=True means use GT information for amplification. Make it false for automatic estimation.
 # 20 here means that afte every 20 images have been loaded to CPU RAM print statistics.
@@ -77,7 +79,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 test_files = glob.glob('SID_cvpr_18_dataset/Sony/short/1*_00_0.1s.ARW')
 if dry_run:
     test_files = test_files[:2]
-    
+
 gt_files = []
 for x in test_files:
     gt_files = gt_files+ glob.glob('SID_cvpr_18_dataset/Sony/long/*'+x[-17:-12]+'*.ARW')
@@ -91,16 +93,23 @@ dataloader_test = DataLoader(load_data(test_files,gt_files,test_amplification_fi
 
 
 
-for i,img in enumerate(dataloader_train):    
-    print('Input image size : {}, GT image size : {}'.format(img[0].size(), img[1].size()))    
+for i,img in enumerate(dataloader_train):
+    print('Input image size : {}, GT image size : {}'.format(img[0].size(), img[1].size()))
     break
-    
+
 ############ Training Begins
 
 device = torch.device('cuda')
 model = Net()
 print(model)
 print('\nTrainable parameters : {}\n'.format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+
+if torch.cuda.device_count() > 1:
+  print("Let's use", torch.cuda.device_count(), "GPUs!")
+  # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+  model = nn.DataParallel(model)
+
+
 model = model.to(device)
 print('Device on cuda: {}'.format(next(model.parameters()).is_cuda))
 
@@ -113,7 +122,7 @@ optimizer.zero_grad()
 loss_list = ['L1_loss,Feature_loss,MS_SSIM']
 loss_iter_list = ['Iteration']
 iter_LR = ['Iter_LR']
-            
+
 
 while iter_num<opt['iterations']:
     for _, img in enumerate(dataloader_train):
@@ -129,18 +138,18 @@ while iter_num<opt['iterations']:
         loss = loss1 + (0.2*loss3)
         loss.backward()
         optimizer.step()
-        optimizer.zero_grad()        
-        
+        optimizer.zero_grad()
+
         if iter_num>opt['iterations']:
-            break        
-        
+            break
+
         if iter_num%10==0:
             print(iter_num)
             if iter_num%100==0:
                 loss_list.append('{},{},{}'.format(loss1.item(),-1,loss3.item()))
                 loss_iter_list.append(iter_num)
                 iter_LR.append(optimizer.param_groups[0]['lr'])
-                
+
         if iter_num in opt['atWhichSave']:
             print('testing......')
             if iter_num == opt['atWhichSave'][0]:
@@ -149,7 +158,7 @@ while iter_num<opt['iterations']:
                 mode = 'a'
             run_test(model, dataloader_test, iter_num, save_images, save_csv_files, metric_average_file, mode, training=True)
             torch.save({'model': model.state_dict()},os.path.join(save_weights,'weights_{}'.format(iter_num)))
-            
+
         if iter_num in opt['atWhichReduce']:
             for group in optimizer.param_groups:
                 old_lr = group['lr']
@@ -161,4 +170,3 @@ while iter_num<opt['iterations']:
 np.savetxt(os.path.join(save_csv_files,'loss_curve.csv'),[p for p in zip(loss_iter_list,loss_list,iter_LR)],delimiter=',',fmt='%s')
 
 print("--- %s seconds ---" % (time.time() - start_time))
-        
