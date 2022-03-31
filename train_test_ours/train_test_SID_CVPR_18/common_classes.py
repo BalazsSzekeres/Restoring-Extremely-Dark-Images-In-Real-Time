@@ -241,7 +241,7 @@ def run_test(model, dataloader_test, iteration, save_images, save_csv_files, met
             low = img[0].to(next(model.parameters()).device)
             gt = img[1]
             pred = model(low)
-            
+            input_img = (np.clip(img[0].detach().cpu().numpy().transpose(1,2,0),0,1)*255).astype(np.uint8)
             pred = (np.clip(pred[0].detach().cpu().numpy().transpose(1,2,0),0,1)*255).astype(np.uint8)
             gt = (np.clip(gt[0].detach().cpu().numpy().transpose(1,2,0),0,1)*255).astype(np.uint8)
             psnr_img = PSNR(pred,gt)
@@ -254,6 +254,7 @@ def run_test(model, dataloader_test, iteration, save_images, save_csv_files, met
                 cond = image_num in [0,1,2,3,7,10,11,12,13,19,20,30,35,41,46,47,48] # During training testing will be done only for few test images. Include those in this list.
             
             if cond:
+                imageio.imwrite(os.path.join(save_images,'{}_{}_{}.jpg'.format(image_num,iteration,"input")), input_img)
                 imageio.imwrite(os.path.join(save_images,'{}_{}_gt_C_{}.jpg'.format(image_num,iteration,c_gt)), gt)
                 imageio.imwrite(os.path.join(save_images,'{}_{}_psnr_{}_ssim_{}_C_{}.jpg'.format(image_num,iteration, psnr_img, ssim_img,c_pred)), pred)
             
